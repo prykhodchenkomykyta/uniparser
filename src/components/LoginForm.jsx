@@ -18,7 +18,7 @@ function LoginForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await fetch("/server/auth/login.php", {
+    const response = await fetch("/api/auth/login.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

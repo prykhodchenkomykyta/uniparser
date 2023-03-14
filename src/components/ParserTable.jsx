@@ -37,7 +37,7 @@ const ParserTable = () => {
     formData.append("csvFile", file);
 
     axios
-      .post("/server/parser/index.php", formData, {
+      .post("/api/parser/index.php", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
