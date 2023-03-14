@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Sidebar from "./components/global/Sidebar";
+import Topbar from "./components/global/Topbar";
+import Faq from "./components/Faq";
+import ParserTable from "./components/ParserTable";
+// import RegisterForm from "./components/RegisterForm";
+// import LoginForm from "./components/LoginForm";
+import { ColorModeContext, useMode } from "./ui/theme";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Routes, Route } from "react-router-dom";
 
-function App() {
+const App = () => {
+  const [theme, colorMode] = useMode();
+
+  // const [isAuth, setIsAuth] = useState(false);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ColorModeContext.Provider value={colorMode}>
+      {/* <Route
+        path="/login"
+        element={<LoginForm setIsAuth={setIsAuth} />}
+      />
+      <Route
+        path="/register"
+        element={<RegisterForm setIsAuth={setIsAuth} />}
+      />
+      <PrivateRoute
+        path="/dashboard"
+        element={<ParserTable />}
+        isAuth={isAuth}
+      />*/}
+      {/*<PrivateRoute path="faq" element={<Faq />} isAuth={isAuth} />*/}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div className="app">
+          <Sidebar />
+          <main className="content">
+            <Topbar />
+            <Routes>
+              <Route
+                path="/dashboard"
+                element={<ParserTable />}
+              />
+              <Route
+                path="/faq"
+                element={<Faq />}
+              />
+            </Routes>
+          </main>
+        </div>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
-}
+};
 
 export default App;
