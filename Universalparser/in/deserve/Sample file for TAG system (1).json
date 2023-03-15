@@ -1,0 +1,28 @@
+ {   "details": [
+        {  
+            "track2_equivalent_data": "5556840006213546=27062012010000000000",
+            "track2_data": "5556840006213546=27062015680000000000",
+            "track1_data": "B5556840006213546^DESERVE/TESTCARD^27062015680000000000000000000", 
+            "title": null, 
+            "template_id": "01", 
+            "state": "Missouri", 
+            "shipping_method": "post", 
+            "postal_code": "63368", 
+            "name_on_card": "DESERVE",
+            "middle_name": null, 
+            "last_name": "TESTCARD",
+            "icvv": "201",
+            "first_name": "DESERVE",
+            "cvv2": "758",
+            "cvc": "568", 
+            "country": "USA",
+            "city": "O’fallon",
+            "card_sequence_number": "1", 
+            "card_number": "5556840006213546",
+            "card_expiry_date": "2706", 
+            "address_line_2": "3300 Mastercard Blvd", 
+            "address_line_1": "Mastercard c/o Chris Davis",
+            "account_number": "9000000500044657"
+        }
+    ]
+    }

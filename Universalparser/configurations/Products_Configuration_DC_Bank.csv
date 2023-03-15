@@ -1,0 +1,3 @@
+Customer,BIN,ProductID,CardStockID,TagProductID,DPProfileName,MachineProductName,ShipMethod_M,ServiceType,PackageType,WeightOz,ShipDate,FromFullName,FromAddress1,FromAddress2,FromCity,FromState,FromCountry,FromZIPCode,IntFromFacility,BulkCompany,BulkFullName,BulkAddress1,BulkAddress2,BulkCity,BulkState,BulkCountry,BulkZIPCode,FEDEXAccount,FEDEXPhoneNumber,BulkShipMethod_B
+EP_FINANCIAL,421973,202,,YAY,P_EP_FINANCIAL_VISA_CAN_ST_TOPAZ_12_V4000044468_BIN8_v144,EP_FINANCIAL_VISA_CAN_ST_TOPAZ_12,USPS_INT,,,,,,,,,,,,TAGUS,,,,,,,,,,,BULK_USPS
+EP_FINANCIAL,511670,201,,HSA,P_EP_FINANCIAL_MC_CAN_ST_TOPAZ_12_V221952348_DC_BANK_v143,EP_FINANCIAL_MC_CAN_ST_TOPAZ_12,USPS_INT,,,,,,,,,,,,TAGUS,,,,,,,,,,,BULK_USPS

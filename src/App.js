@@ -3,6 +3,7 @@ import Sidebar from "./components/global/Sidebar";
 import Topbar from "./components/global/Topbar";
 import Faq from "./components/Faq";
 import ParserTable from "./components/ParserTable";
+import GroupComponent from "./components/GroupComponent.jsx";
 // import RegisterForm from "./components/RegisterForm";
 // import LoginForm from "./components/LoginForm";
 import { ColorModeContext, useMode } from "./ui/theme";
@@ -44,6 +45,10 @@ const App = () => {
               <Route
                 path="/faq"
                 element={<Faq />}
+              />
+              <Route
+                path="/groups"
+                element={<GroupComponent />}
               />
             </Routes>
           </main>

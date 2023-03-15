@@ -39,7 +39,7 @@ function RegisterForm() {
   return (
     <form onSubmit={handleSubmit}>
       <Typography variant="h5" gutterBottom>
-        Регистрация
+        Registration
       </Typography>
       <TextField
         type="email"
@@ -64,7 +64,7 @@ function RegisterForm() {
         onChange={handleChange}
       />
       <Button type="submit" variant="contained" color="primary">
-        Зарегистрироваться
+        Register
       </Button>
     </form>
   );

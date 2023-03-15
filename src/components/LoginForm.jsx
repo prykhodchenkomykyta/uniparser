@@ -38,7 +38,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit}>
       <Typography variant="h5" gutterBottom>
-        Вход
+        Login
       </Typography>
       <TextField
         type="email"
@@ -63,7 +63,7 @@ function LoginForm() {
         onChange={handleChange}
       />
       <Button type="submit" variant="contained" color="primary">
-        Войти
+        Submit
       </Button>
     </form>
   );

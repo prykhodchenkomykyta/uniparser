@@ -1,0 +1,5 @@
+Created,Order ID,Status,Stripe ID,Email,Name,Address Line 1,Address Line 2,City,State,Zip,Qty,Type,Coupon,Total,CC Charged,Shipdate,Production #,Tracking #,Address Needs Verification 
+10/13/2021 12:20:20,123,paid,cus_KOuCMi4c51ia11,cats@gmail.com,John Doe,6 Old Oak Place,,Orange,CA,78865,1,limited,,99,,10/14/2021,10142021-001,,
+10/13/2021 12:41:37,456,paid,cus_KOuavD0ohj7YKD,mice@hotmail.com,Arthur Time,35 SW 21st Street,,Coconut,FL,7045,1,limited,,99,,10/14/2021,10142021-002,,
+10/13/2021 12:41:11,231,paid,cus_KOuV7Quy5x8979,doug@protonmail.com,Don Bender,87 Raleigh Road,,Bath,PA,21008,1,limited,arculus40,59,,10/14/2021,10142021-003,,
+10/13/2021 12:37:29,478,paid,cus_KOuVDaMRdA1420,thenest@cox.net,Fred Flintstone,45 Country Road,,Knoxville,TN,23000,1,limited,,99,,10/14/2021,10142021-004,,
