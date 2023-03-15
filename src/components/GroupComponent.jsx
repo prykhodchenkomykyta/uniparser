@@ -17,6 +17,7 @@ import {
   DialogContent,
   DialogActions,
   Typography,
+  Box
 } from "@mui/material";
 import { useMode, tokens } from "../ui/theme";
 import {
@@ -37,6 +38,8 @@ function FileList() {
   const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
   const [editGroupDialogOpen, setEditGroupDialogOpen] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState("");
+  const [theme, colorMode] = useMode();
+  const colors = tokens(theme.palette.mode);
 
   // Fetch files and groups on component mount
   useEffect(() => {
