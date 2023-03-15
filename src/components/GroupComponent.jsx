@@ -1,104 +1,196 @@
 import React, { useState, useEffect } from "react";
-import { useMode } from "../ui/theme";
-import { Box, TextField, Button } from "@mui/material";
-import { tokens } from "../ui/theme";
 import axios from "axios";
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from "@mui/material";
+import { useMode, tokens } from "../ui/theme";
+import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+} from "@mui/icons-material";
+import { DataGrid } from "@mui/x-data-grid";
 import Header from "./global/Header";
 
-const GroupSettings = () => {
-  const [theme, colorMode] = useMode();
-  const colors = tokens(theme.palette.mode);
+const API_BASE_URL = "http://localhost:8000/";
 
-  const [newGroupName, setNewGroupName] = useState("");
-  const [newFilePath, setNewFilePath] = useState("");
+function FileList() {
+  const [files, setFiles] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [newGroupName, setNewGroupName] = useState("");
+  const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
+  const [editGroupDialogOpen, setEditGroupDialogOpen] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState("");
 
-  const handleNewGroupNameChange = (event) => {
-    setNewGroupName(event.target.value);
-  };
-
-  const handleNewFilePathChange = (event) => {
-    setNewFilePath(event.target.value);
-  };
-
-  const handleCreateGroup = () => {
-    axios
-    .post("/api/groups/create.php", {
-      name: newGroupName,
-      filePath: newFilePath,
-    })
-    .then((response) => {
-      setGroups([...groups, response.data]);
-      setNewGroupName("");
-      setNewFilePath("");
-    })
-    .catch((error) => console.error(error));
-  };
-
-  const handleDeleteGroup = (id) => {
-    axios
-      .post("/api/groups/delete.php", {
-      id: id,
-      })
-      .then(() => {
-      setGroups(groups.filter((group) => group.id !== id));
-      })
-      .catch((error) => console.error(error));
-  };
-
-  const handleListGroups = () => {
-    axios
-      .get("/api/groups/list.php")
-      .then((response) => {
-      setGroups(response.data);
-      })
-      .catch((error) => console.error(error));
-  };
-
+  // Fetch files and groups on component mount
   useEffect(() => {
-    handleListGroups();
+    fetchFiles();
+    fetchGroups();
   }, []);
 
-  const handleGroupSettingsDelete = (id) => {
-  handleDeleteGroup(id);
-  };
-
-  const handleGroupSettingsSubmit = (id, name, filePath) => {
+  // Fetch files from server
+  const fetchFiles = () => {
     axios
-    .post("/api/groups/update.php", {
-      id: id,
-      name: name,
-      filePath: filePath,
-    })
-    .then(() => {
-      setGroups(
-      groups.map((group) => {
-        if (group.id === id) {
-          return {
-            id: group.id,
-            name: name,
-            filePath: filePath,
-          };
-        }
-        return group;
+      .get(API_BASE_URL + "api/groups/list_files.php")
+      .then((response) => setFiles(response.data))
+      .catch((error) => console.log(error));
+  };
+
+  // Fetch groups from server
+  const fetchGroups = () => {
+    axios
+      .get(API_BASE_URL + "api/groups/list_groups.php")
+      .then((response) => setGroups(response.data))
+      .catch((error) => console.log(error));
+  };
+
+  // Handle file adding to a group
+  const handleAddFileToGroup = (fileName) => {
+    axios
+      .post(API_BASE_URL + "api/groups/add_file_to_group.php", {
+        group: selectedGroup,
+        file: fileName,
       })
-      );
-    })
-    .catch((error) => console.error(error));
-    };
-
-  const handleGroupSettingsCancel = () => {
-    handleListGroups();
+      .then((response) => fetchFiles())
+      .catch((error) => console.log(error));
   };
 
-  const handleGroupSettingsOpen = (id) => {
-  // ...
+  // Handle group creation
+  const handleCreateGroup = () => {
+    axios
+      .post(API_BASE_URL + "api/groups/create_group.php", {
+        name: newGroupName,
+      })
+      .then((response) => {
+        fetchGroups();
+        setCreateGroupDialogOpen(false);
+        setNewGroupName("");
+      })
+      .catch((error) => console.log(error));
   };
 
-return (
-  <>
+  // Handle group deletion
+  const handleDeleteGroup = (groupId) => {
+    axios
+      .post(API_BASE_URL + "api/groups/delete_group.php", {
+        id: groupId,
+      })
+      .then((response) => fetchGroups())
+      .catch((error) => console.log(error));
+  };
+
+  // Handle group name edit
+  const handleEditGroup = () => {
+    axios
+      .post(API_BASE_URL + "api/groups/update_group.php", {
+        id: selectedGroupId,
+        name: newGroupName,
+      })
+      .then((response) => {
+        fetchGroups();
+        setEditGroupDialogOpen(false);
+        setSelectedGroupId("");
+        setNewGroupName("");
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const columns = [
+    { field: "name", headerName: "Name", width: 250 },
+    { field: "date_created", headerName: "Date Created", width: 250 },
+    { field: "group", headerName: "Group", width: 250 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      sortable: false,
+      width: 250,
+      renderCell: (params) => (
+        <>
+          {!params.row ? (
+            <>
+              <IconButton onClick={() => handleAddFileToGroup(params.value)}>
+                <AddIcon />
+              </IconButton>
+              <Dialog
+                open={createGroupDialogOpen}
+                onClose={() => setCreateGroupDialogOpen(false)}
+              >
+                <DialogTitle>Create Group</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    label="Group Name"
+                    value={newGroupName}
+                    onChange={(e) => setNewGroupName(e.target.value)}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setCreateGroupDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateGroup} color="primary">
+                    Create
+                  </Button>
+                </DialogActions>
+              </Dialog>
+              <IconButton
+                onClick={() => {
+                  setSelectedGroupId(params.row.id);
+                  setNewGroupName(params.row.name);
+                  setEditGroupDialogOpen(true);
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+              <Dialog
+                open={editGroupDialogOpen}
+                onClose={() => setEditGroupDialogOpen(false)}
+              >
+                <DialogTitle>Edit Group Name</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    label="Group Name"
+                    value={newGroupName}
+                    onChange={(e) => setNewGroupName(e.target.value)}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setEditGroupDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleEditGroup} color="primary">
+                    Save
+                  </Button>
+                </DialogActions>
+              </Dialog>
+              <IconButton onClick={() => handleDeleteGroup(params.row.id)}>
+                <DeleteIcon />
+              </IconButton>
+            </>
+          ) : null}
+        </>
+      ),
+    },
+  ];
+
+  return (
     <Box m="20px">
-    <Header title="Group Settings" subtitle="Manage your groups" />
+      <Header title="CSV" subtitle="List of data from CSV" />
       <Box
         m="40px 0 0 0"
         height="70vh"
@@ -117,71 +209,88 @@ return (
             borderBottom: "none",
           },
           "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.blueAccent[900],
-            borderRadius: "4px",
-            padding: "10px",
-            height: "calc(100% - 10px)",
+            backgroundColor: colors.primary[400],
           },
-          "& .MuiDataGrid-cell--withRenderer": {
-            paddingLeft: "30px",
-            paddingRight: "30px",
+          "& .MuiDataGrid-footerContainer": {
+            borderTop: "none",
+            backgroundColor: colors.blueAccent[700],
+          },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
           },
         }}
       >
-        <DataGrid
-          rows={groups}
-          columns={columns}
-          pageSize={10}
-          autoHeight={true}
-          disableSelectionOnClick={true}
-          disableColumnMenu={true}
-          disableColumnFilter={true}
-          disableColumnSelector={true}
-          disableDensitySelector={true}
-          getRowClassName={(params) =>
-            `${params.row.id % 2 === 0 ? "even-row" : "odd-row"} ${params.row.id === editingGroupId ? "editing-row" : ""}`
-          }
-          components={{
-          Toolbar: CustomToolbar,
-          }}
-          onEditCellChangeCommitted={(params) => {
-          handleGroupSettingsSubmit(
-          params.id,
-          params.field === "name" ? params.props.value : params.row.name,
-          params.field === "filePath" ? params.props.value : params.row.filePath
-          );
-          setEditingGroupId(null);
-          }}
-        />
-        <GroupSettingsDialog
-          open={editingGroupId !== null}
-          onSubmit={handleGroupSettingsSubmit}
-          onCancel={handleGroupSettingsCancel}
-          group={groups.find((group) => group.id === editingGroupId)}
-        />
-        </Box>
-        <Box m="40px 0">
-          <TextField
-          label="New Group Name"
-          variant="outlined"
-          value={newGroupName}
-          onChange={handleNewGroupNameChange}
-        />
-        <Box m="20px 0" />
-          <TextField
-            label="New File Path"
-            variant="outlined"
-            value={newFilePath}
-            onChange={handleNewFilePathChange}
-        />
-          <Box m="20px 0" />
-            <Button variant="contained" onClick={handleCreateGroup}>
-              Create Group
-          </Button>
-        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader title="Files" />
+              <CardContent>
+                <List>
+                  {files.map((file, index) => (
+                    <ListItem key={index}>
+                      <ListItemText primary={file.name} />
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          onClick={() => handleAddFileToGroup(file.name)}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader
+                title="Groups"
+                action={
+                  <IconButton onClick={() => setCreateGroupDialogOpen(true)}>
+                    <AddIcon />
+                  </IconButton>
+                }
+              />
+              <CardContent>
+                <DataGrid
+                  rows={groups}
+                  columns={columns}
+                  pageSize={10}
+                  disableSelectionOnClick
+                  onRowClick={(params) => setSelectedGroup(params.row.name)}
+                  getRowId={(row) => row.name}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Dialog
+            open={selectedGroup !== ""}
+            onClose={() => setSelectedGroup("")}
+          >
+            <DialogTitle>{selectedGroup}</DialogTitle>
+            <DialogContent>
+              <Typography variant="h6">Files</Typography>
+              <List>
+                {files
+                  .filter((file) => file.group === selectedGroup)
+                  .map((file, index) => (
+                    <ListItem key={index}>
+                      <ListItemText primary={file.name} />
+                    </ListItem>
+                  ))}
+              </List>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setSelectedGroup("")} color="primary">
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Grid>
       </Box>
-    </>
+    </Box>
   );
-};
+}
 
-export default GroupSettings;
+export default FileList;

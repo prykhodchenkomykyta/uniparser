@@ -1,12 +1,17 @@
-{
-  "groups": [
-    {
-      "id": 1,
-      "name": "Group 1"
-    },
-    {
-      "id": 2,
-      "name": "Group 2"
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "name": "Group 1",
+    "files": ["file1.txt", "file2.txt"]
+  },
+  {
+    "id": 2,
+    "name": "Group 2",
+    "files": ["file3.txt", "file4.txt"]
+  },
+  {
+    "id": 3,
+    "name": "Group 3",
+    "files": []
+  }
+]
