@@ -19,7 +19,7 @@ import {
   Typography,
   Box
 } from "@mui/material";
-import { useMode, tokens } from "../ui/theme";
+import { tokens } from "../ui/theme";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -27,8 +27,9 @@ import {
 } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import Header from "./global/Header";
+import { useTheme } from '@mui/material';
 
-const API_BASE_URL = "http://localhost:8000/";
+const API_BASE_URL = "http://localhost/";
 
 function FileList() {
   const [files, setFiles] = useState([]);
@@ -38,7 +39,7 @@ function FileList() {
   const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
   const [editGroupDialogOpen, setEditGroupDialogOpen] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState("");
-  const [theme, colorMode] = useMode();
+  const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   // Fetch files and groups on component mount
