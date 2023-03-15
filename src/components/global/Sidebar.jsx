@@ -6,6 +6,7 @@ import { tokens } from "../../ui/theme";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import { Link } from "react-router-dom";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -110,7 +111,7 @@ const Sidebar = ({ children }) => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Parser"
-              to="/"
+              to="/dashboard"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -127,6 +128,13 @@ const Sidebar = ({ children }) => {
               title="FAQ"
               to="/faq"
               icon={<HelpOutlineOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Group of files"
+              to="/groups"
+              icon={<BarChartOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

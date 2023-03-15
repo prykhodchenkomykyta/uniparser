@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useMode, tokens } from "../ui/theme";
+import { tokens } from "../ui/theme";
 import { Box } from "@mui/material";
-import { CSVLink } from "react-csv";
+// import { CSVLink } from "react-csv";
+// import { CircularProgress } from "@mui/material";
 import {
   Button,
-  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -16,15 +16,16 @@ import {
   Input,
   InputLabel,
 } from "@mui/material";
+import { useTheme } from '@mui/material';
 import axios from "axios";
 import Header from "./global/Header";
 import { saveAs } from "file-saver";
 
 const ParserTable = () => {
-  const [theme, colorMode] = useMode();
+  const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const [data, setData] = useState(storedData || []);
+  const [data, setData] = useState([]); // useState(storedData || [])
   const [file, setFile] = useState(null);
 
   const handleFileChange = (event) => {
@@ -59,7 +60,7 @@ const ParserTable = () => {
     saveAs(blob, "data.csv");
   };
 
-  const storedData = JSON.parse(localStorage.getItem("csvData"));
+  // const storedData = JSON.parse(localStorage.getItem("csvData"));
 
   return (
     <Box m="20px">
