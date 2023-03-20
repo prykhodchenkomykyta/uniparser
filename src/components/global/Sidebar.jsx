@@ -22,12 +22,12 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       icon={icon}
     >
       <Typography>{title}</Typography>
-      <Link href={to}></Link>
+      <Link to={to} />
     </MenuItem>
   );
 };
 
-const Sidebar = ({ children }) => {
+const Sidebar = ({ }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = React.useState(false);
@@ -35,6 +35,7 @@ const Sidebar = ({ children }) => {
 
   return (
     <Box
+      className="min-h-screen"
       sx={{
         "& .pro-sidebar-inner": {
           background: `${colors.primary[400]} !important`,
@@ -53,7 +54,7 @@ const Sidebar = ({ children }) => {
         },
       }}
     >
-      <ProSidebar collapsed={isCollapsed} className="h-screen">
+      <ProSidebar collapsed={isCollapsed}>
         <Menu iconShape="square">
           {/* LOGO AND MENU ICON */}
           <MenuItem
@@ -111,7 +112,7 @@ const Sidebar = ({ children }) => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Parser"
-              to="/dashboard"
+              to="/parser"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

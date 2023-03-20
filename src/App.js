@@ -2,8 +2,8 @@ import React from "react";
 import Sidebar from "./components/global/Sidebar";
 import Topbar from "./components/global/Topbar";
 import Faq from "./components/Faq";
-import ParserTable from "./components/ParserTable";
-import GroupComponent from "./components/GroupComponent.jsx";
+import ParserComponent from "./components/ParserComponent";
+import GroupComponent from "./components/GroupComponent";
 import { ColorModeContext, useMode } from "./ui/theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { Routes, Route } from "react-router-dom";
@@ -39,17 +39,17 @@ const App = () => {
                 />*/}
                 {/*<PrivateRoute path="faq" element={<Faq />} isAuth={isAuth} />*/}             
               <Route
-                path="/dashboard"
-                element={<ParserTable />}
+                path="/parser"
+                element={<ParserComponent />}
               />
               <Route
                 path="/faq"
                 element={<Faq />}
               />
               <Route
-                 path="/groups"
-                 element={<GroupComponent />}
-               />
+                path="/groups"
+                element={<GroupComponent />}
+              />
             </Routes>
           </main>
         </div>

@@ -1,0 +1,308 @@
+import React, { useState, useEffect } from "react";
+import { tokens } from "../ui/theme";
+import { Box } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import {
+	DataGrid,
+	GridToolbarContainer,
+	GridToolbarColumnsButton,
+	GridToolbarDensitySelector,
+	GridToolbarExport,
+	GridToolbarFilterButton,
+} from "@mui/x-data-grid";
+import { useTheme } from "@mui/material";
+import axios from "axios";
+import Header from "./global/Header";
+import { saveAs } from "file-saver";
+import {
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	DialogActions,
+	Button,
+	TextField,
+	FormControl,
+	Input,
+} from "@mui/material";
+
+const ParserComponent = () => {
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
+
+	const [data, setData] = useState([]);
+	const [filterModel, setFilterModel] = useState({ items: [] });
+	const [selectedRow, setSelectedRow] = useState(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [editingRow, setEditingRow] = useState(null);
+	//const [searchQuery, setSearchQuery] = useState("");
+
+	useEffect(() => {
+		const savedData = localStorage.getItem("parserData");
+		if (savedData) {
+			setData(JSON.parse(savedData));
+		}
+	}, []);
+
+	useEffect(() => {
+		localStorage.setItem("parserData", JSON.stringify(data));
+	}, [data]);
+
+	const handleRowClick = (params, event) => {
+		setSelectedRow(params.row);
+	};
+
+	const handleFileUpload = (event) => {
+		const file = event.target.files[0];
+		const formData = new FormData();
+		formData.append("file", file);
+		axios
+			.post("http://localhost/parser/src/api/parser/index.php", formData)
+			.then((response) => {
+				setData([...data, ...response.data]);
+			});
+	};
+
+	const handleExportClick = () => {
+		const csvData = data.map((row) => row.join(",")).join("\n");
+		const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+		saveAs(blob, "data.csv");
+	};
+
+	const handleFilterModelChange = (model) => {
+		setFilterModel(model);
+	};
+
+	const handleDeleteRow = (id) => {
+		setData(data.filter((row) => row.id !== id));
+	};
+
+	const handleEditRow = (row) => {
+		setEditingRow(row);
+		setIsModalOpen(true);
+	};
+
+	const handleModalClose = () => {
+		setIsModalOpen(false);
+		setEditingRow(null);
+	};
+
+	const handleModalSave = () => {
+		const newData = data.map((row) =>
+			row.id === editingRow.id ? editingRow : row
+		);
+		setData(newData);
+		handleModalClose();
+	};
+
+	const handleClearStorage = () => {
+		localStorage.clear();
+		setData([]);
+	};
+
+	// 	const filterRows = (rows, query) => {
+	//   return rows.filter((row) => {
+	//     const values = Object.values(row);
+	//     for (let i = 0; i < values.length; i++) {
+	//       if (typeof values[i] === "string" && values[i].toLowerCase().includes(query.toLowerCase())) {
+	//         return true;
+	//       }
+	//     }
+	//     return false;
+	//   });
+	// };
+
+	const columns = data[0]
+		? data[0].map((header, index) => ({
+				field: `field_${index}`,
+				headerName: header,
+				width: 150,
+		  }))
+		: [];
+
+	// const filteredRows = filterRows(data, searchQuery);
+	// const rows = filteredRows.map((row, index) => ({
+	//   id: index,
+	//   ...row
+	// }));
+	const rows = data.slice(1).map((row, index) => ({
+		id: index,
+		...row.reduce(
+			(acc, val, index) => ({ ...acc, [`field_${index}`]: val }),
+			{}
+		),
+	}));
+
+	const renderToolbar = () => {
+		return (
+			<GridToolbarContainer>
+				<Box sx={{ display: "flex", alignItems: "center" }}>
+					{/*					<TextField
+				    label="Search"
+				    value={searchQuery}
+				    onChange={(event) => setSearchQuery(event.target.value)}
+				    sx={{ mr: 3 }}
+				  />*/}
+					<Box sx={{ mr: 3 }}>
+						{/*<label htmlFor="file-upload">
+							<Button
+								variant="contained"
+								component="span"
+								startIcon={<CloudUploadIcon />}
+								sx={{ backgroundColor: colors.primary }}
+							>
+								Upload
+							</Button>
+						</label>*/}
+						<FormControl>
+							<Input
+								id="file-upload"
+								type="file"
+								accept=".csv"
+								onChange={handleFileUpload}
+								sx={{ mb: 1 }}
+							/>
+						</FormControl>
+						{/*<input
+							id="file-upload"
+							type="file"
+							style={{ display: "none" }}
+							onChange={handleFileUpload}
+						/>*/}
+					</Box>
+					<Box sx={{ mr: 1 }}>
+						<Button
+							variant="contained"
+							startIcon={<DeleteIcon />}
+							sx={{ backgroundColor: colors.error, mb: 1 }}
+							onClick={() => handleDeleteRow(selectedRow.id)}
+							disabled={!selectedRow}
+						>
+							Delete
+						</Button>
+					</Box>
+					<Box sx={{ mr: 1 }}>
+						<Button
+							variant="contained"
+							startIcon={<EditIcon />}
+							sx={{ backgroundColor: colors.warning, mb: 1 }}
+							onClick={() => handleEditRow(selectedRow)}
+							disabled={!selectedRow}
+						>
+							Edit
+						</Button>
+					</Box>
+					<Box sx={{ mr: 1 }}>
+						<Button
+							variant="contained"
+							startIcon={<DeleteIcon />}
+							sx={{ backgroundColor: colors.error, mb: 1 }}
+							onClick={handleClearStorage}
+						>
+							Refresh Data
+						</Button>
+					</Box>
+					<Box sx={{ flexGrow: 1 }} />
+					<Box sx={{ mr: 1 }}>
+						<GridToolbarColumnsButton />
+					</Box>
+					<Box sx={{ mr: 1 }}>
+						<GridToolbarFilterButton />
+					</Box>
+					<Box sx={{ mr: 1 }}>
+						<GridToolbarDensitySelector />
+					</Box>
+					<Box sx={{ mr: 1 }}>
+						<GridToolbarExport
+							onClick={handleExportClick}
+							csvOptions={{ delimiter: ";" }}
+						/>
+					</Box>
+				</Box>
+			</GridToolbarContainer>
+		);
+	};
+
+	return (
+		<>
+			<Box m="20px">
+				<Header title="CSV" subtitle="List of data from CSV" />
+				<Box
+					m="40px 0 0 0"
+					height="70vh"
+					sx={{
+						"& .MuiDataGrid-root": {
+							border: "none",
+						},
+						"& .MuiDataGrid-cell": {
+							borderBottom: "none",
+						},
+						"& .name-column--cell": {
+							color: colors.greenAccent[300],
+						},
+						"& .MuiDataGrid-columnHeaders": {
+							backgroundColor: colors.blueAccent[700],
+							borderBottom: "none",
+						},
+						"& .MuiDataGrid-virtualScroller": {
+							backgroundColor: colors.primary[400],
+						},
+						"& .MuiDataGrid-footerContainer": {
+							borderTop: "none",
+							backgroundColor: colors.blueAccent[700],
+						},
+						"& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+							color: `${colors.grey[100]} !important`,
+						},
+					}}
+				>
+					<DataGrid
+						rows={rows}
+						columns={columns}
+						pageSize={10}
+						rowsPerPageOptions={[10, 25, 50]}
+						onRowClick={handleRowClick}
+						disableSelectionOnClick
+						filterModel={filterModel}
+						onFilterModelChange={handleFilterModelChange}
+						components={{
+							Toolbar: renderToolbar,
+						}}
+					/>
+					<Dialog open={isModalOpen} onClose={handleModalClose}>
+						<DialogTitle>Edit Row</DialogTitle>
+						<DialogContent>
+							<DialogContentText>
+								Edit the fields of the selected row.
+							</DialogContentText>
+							{editingRow &&
+								Object.entries(editingRow).map(([key, value]) => (
+									<TextField
+										key={key}
+										label={key}
+										defaultValue={value}
+										onChange={(event) =>
+											setEditingRow({
+												...editingRow,
+												[key]: event.target.value,
+											})
+										}
+										fullWidth
+										margin="normal"
+									/>
+								))}
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={handleModalClose}>Cancel</Button>
+							<Button onClick={handleModalSave}>Save</Button>
+						</DialogActions>
+					</Dialog>
+				</Box>
+			</Box>
+		</>
+	);
+};
+
+export default ParserComponent;

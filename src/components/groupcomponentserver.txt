@@ -1,0 +1,174 @@
+import React, { useState } from "react";
+import { DataGrid } from "@material-ui/data-grid";
+
+const columns = [
+  { field: "id", headerName: "ID", width: 70 },
+  { field: "name", headerName: "Name", width: 130 },
+  { field: "group", headerName: "Group", width: 130 },
+];
+
+const rows = [
+  { id: 1, name: "File 1", group: "Group 1" },
+  { id: 2, name: "File 2", group: "Group 2" },
+];
+
+const App = () => {
+  const [fileGroups, setFileGroups] = useState(rows);
+
+  const addGroup = () => {
+    const newGroup = { id: fileGroups.length + 1, name: "", group: "" };
+    setFileGroups([...fileGroups, newGroup]);
+  };
+
+  const addFile = (groupId) => {
+    const newFile = { id: fileGroups.length + 1, name: `File ${fileGroups.length + 1}`, group: groupId };
+    const updatedGroups = fileGroups.map((group) =>
+      group.id === groupId ? { ...group, files: [...(group.files || []), newFile] } : group
+    );
+    setFileGroups(updatedGroups);
+  };
+
+  const handleCellChange = (params) => {
+    const updatedGroups = fileGroups.map((group) =>
+      group.id === params.id ? { ...group, [params.field]: params.value } : group
+    );
+    setFileGroups(updatedGroups);
+  };
+
+  // Сохранение данных в localstorage
+  React.useEffect(() => {
+    localStorage.setItem("fileGroups", JSON.stringify(fileGroups));
+  }, [fileGroups]);
+
+  return (
+    <>
+      <button onClick={addGroup}>Add group</button>
+      <div style={{ height: 400, width: "100%" }}>
+        <DataGrid rows={fileGroups} columns={columns} onCellEditCommit={handleCellChange} />
+      </div>
+      {fileGroups.map((group) => (
+        <div key={group.id}>
+          <h2>{group.name}</h2>
+          <button onClick={() => addFile(group.id)}>Add file</button>
+          <div style={{ height: 200, width: "100%" }}>
+            <DataGrid rows={group.files || []} columns={columns} />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
+
+export default App;
+
+
+import React, { useState } from "react";
+import { Dialog, DialogTitle, DialogContent, Button } from "@material-ui/core";
+
+function AddFilesModal(props) {
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  function handleFileSelect(event) {
+    const files = Array.from(event.target.files);
+    setSelectedFiles(files);
+  }
+
+  function handleSave() {
+    props.onSave(selectedFiles);
+  }
+
+  return (
+    <Dialog open={props.isOpen} onClose={props.onClose}>
+      <DialogTitle>Select Files</DialogTitle>
+      <DialogContent>
+        <input
+          type="file"
+          accept=".pdf,.doc,.docx,.xls,.xlsx"
+          multiple
+          directory
+          webkitdirectory
+          onChange={handleFileSelect}
+        />
+        <Button variant="contained" onClick={handleSave}>
+          Save
+        </Button>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default AddFilesModal;
+
+Хорошо, предположим, что у тебя есть сервер, на котором установлен PHP, и ты можешь создавать файлы и папки в его корневой директории.
+
+Создай файл list_files.php в корневой директории сервера и добавь в него следующий код:
+
+<?php
+
+$directory = "path/to/directory"; // путь к директории, в которой нужно искать файлы
+$files = array_diff(scandir($directory), array('..', '.')); // получаем список файлов в директории
+
+echo json_encode($files); // возвращаем список файлов в формате JSON
+
+Обрати внимание на то, что в переменной $directory нужно указать путь к директории, в которой нужно искать файлы. Также важно понимать, что этот метод вернет список всех файлов в этой директории без каких-либо фильтров или проверок.
+
+Затем на клиентской стороне, в компоненте App, тебе нужно создать метод, который будет вызывать этот API-метод и получать список файлов из директории. Вот как это можно сделать:
+
+import React, { useState, useEffect } from "react";
+
+function App() {
+  const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    fetch("list_files.php")
+      .then((response) => response.json())
+      .then((data) => setFiles(data));
+  }, []);
+
+  return (
+    <div>
+      {files.map((file) => (
+        <div>{file}</div>
+      ))}
+    </div>
+  );
+}
+
+export default App;
+
+Для подключения API-методов на сервере php и получения списка файлов в модальном окне, нам необходимо сделать следующее:
+
+Создать функцию на клиенте, которая будет использовать API-метод на сервере для получения списка файлов в директории. Например:
+javascript
+Copy code
+async function fetchFiles() {
+  const response = await fetch('/api/files.php');
+  const data = await response.json();
+  return data;
+}
+Создать состояние в компоненте AddFilesModal для хранения списка файлов, полученного из API-метода. Например:
+scss
+Copy code
+const [files, setFiles] = useState([]);
+В компоненте AddFilesModal вызвать функцию fetchFiles() при открытии модального окна и сохранить список файлов в состояние files. Например:
+scss
+Copy code
+React.useEffect(() => {
+  async function getFiles() {
+    const data = await fetchFiles();
+    setFiles(data);
+  }
+  getFiles();
+}, []);
+Отобразить список файлов внутри модального окна. Например:
+php
+Copy code
+<DialogContent>
+  {files.map((file, index) => (
+    <div key={index}>{file.name}</div>
+  ))}
+  <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple onChange={handleFileSelect} />
+  <Button variant="contained" onClick={handleSave}>
+    Save
+  </Button>
+</DialogContent>
